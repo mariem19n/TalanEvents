@@ -29,4 +29,29 @@ public class UserController {
 
         return ResponseEntity.ok(user);
     }
+
+    @GetMapping("/by-email/{email}")
+    public ResponseEntity<?> getUserIdByEmail(@PathVariable String email) {
+        return userRepository.findByEmail(email)
+                .map(user -> ResponseEntity.ok(new UserIdDTO(user.getId())))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    // DTO interne pour ne renvoyer que l’ID
+    public static class UserIdDTO {
+        private Long id;
+
+        public UserIdDTO(Long id) {
+            this.id = id;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+    }
+
 }

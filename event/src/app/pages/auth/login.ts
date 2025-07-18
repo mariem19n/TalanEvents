@@ -10,6 +10,10 @@ import { RippleModule } from 'primeng/ripple';
 import { AppFloatingConfigurator } from '../../layout/component/app.floatingconfigurator';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../pages/service/auth.service';
+//import { EventCreateComponent } from './events/event-create/event-create.component';
+
+
+
 
 @Component({
   selector: 'app-login',
@@ -41,12 +45,22 @@ export class Login {
     this.errorMessage = '';
 
     this.authService.login(this.email, this.password).subscribe({
-      next: () => {
-        this.router.navigate(['/']); // ou vers un autre chemin sécurisé
-      },
-      error: () => {
-        this.errorMessage = 'Email ou mot de passe incorrect.';
-      }
-    });
+     next: () => {
+     const roles = this.authService.getRoles();
+     console.log('Rôles:', roles); 
+     
+    if (roles.includes('ADMIN')) {
+      this.router.navigate(['/pages/admin-dashboard']);
+    } else if (roles.includes('ORGANIZER')) {
+      this.router.navigate(['/pages/organizer-dashboard']);
+    } else {
+      this.router.navigate(['/pages/user-home']);
+    }
+  },
+  error: () => {
+    this.errorMessage = 'Email ou mot de passe incorrect.';
+  }
+});
+
   }
 }

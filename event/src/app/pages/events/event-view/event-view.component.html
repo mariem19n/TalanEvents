@@ -1,0 +1,43 @@
+<p-card header="Détails de l'événement" class="mt-4">
+  <div *ngIf="eventData" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    
+    <!-- Détails à gauche -->
+    <div>
+      <p><strong>Titre :</strong> {{ eventData.title }}</p>
+      <p><strong>Date :</strong> {{ eventData.eventDate }}</p>
+      <p><strong>Heure :</strong> {{ eventData.startTime }} - {{ eventData.endTime }}</p>
+      <p><strong>Lieu :</strong> {{ eventData.location }}</p>
+      <p><strong>Description :</strong> {{ eventData.description || 'Aucune description' }}</p>
+
+      <div class="mt-4">
+        <button 
+          pButton 
+          label="Envoyer les invitations" 
+          icon="pi pi-send" 
+          (click)="sendInvitations()" 
+          class="p-button-primary">
+        </button>
+      </div>
+    </div>
+
+    <!-- Upload + Preview à droite -->
+    <div>
+      <h4 class="mb-2">Poster de l’événement</h4>
+      <app-image-uploader (onImageUploaded)="handlePosterUpload($event)" />
+
+      <div *ngIf="uploadedFileName" class="mt-3">
+        <p class="text-sm"> Poster sélectionné : {{ uploadedFileName }}</p>
+        <img 
+          *ngIf="posterPreviewUrl"
+          [src]="posterPreviewUrl"
+          alt="Aperçu du poster"
+          class="mt-2 rounded border shadow max-w-full"
+          style="max-height: 250px;"
+        />
+      </div>
+    </div>
+
+  </div>
+</p-card>
+
+<p-toast></p-toast>

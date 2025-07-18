@@ -1,0 +1,64 @@
+/*.dropdown-menu {
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+*/
+
+/* Position relative sur le wrapper pour gérer la position absolue de l’icône */
+:host ::ng-deep .dropdown-wrapper {
+  position: relative;
+}
+
+/* Icône horloge centrée verticalement à droite du champ */
+:host ::ng-deep .dropdown-wrapper i.pi-clock {
+  position: absolute !important;
+  right: 12px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  pointer-events: none !important;
+  color: #6b7280 !important;
+  font-size: 1.2rem !important;
+}
+
+/* Style pour le menu dropdown personnalisé */
+:host ::ng-deep .dropdown-menu {
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  border-radius: 8px;
+  max-height: 12rem; /* env. 6 options visibles */
+  overflow-y: auto;
+  z-index: 50;
+}
+
+/* Style des options */
+:host ::ng-deep .dropdown-menu li {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+:host ::ng-deep .dropdown-menu li:hover {
+  background-color: #f3f4f6;
+}
+
+/* Input texte stylisé avec espace pour l’icône */
+:host ::ng-deep .p-inputtext {
+  font-size: 0.9rem;
+  padding-right: 2.5rem; /* espace pour icône horloge */
+}
+
+/* Espacement vertical des labels */
+:host ::ng-deep label {
+  margin-bottom: 0.25rem;
+}
+
+/* Responsive : empile les champs sur petit écran */
+@media (max-width: 640px) {
+  :host ::ng-deep .flex {
+    flex-direction: column;
+  }
+  :host ::ng-deep .field.w-1\/2 {
+    width: 100% !important;
+  }
+}

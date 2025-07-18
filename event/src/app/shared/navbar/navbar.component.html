@@ -1,0 +1,51 @@
+<nav class="w-full bg-white dark:bg-gray-900 shadow-md px-8 py-4 flex justify-between items-center sticky top-0 z-50 h-[80px]">
+  <!-- Logo -->
+  <div class="flex items-center gap-6">
+    <button class="layout-menu-button layout-topbar-action" (click)="layoutService.onMenuToggle()">
+      <i class="pi pi-bars text-2xl text-gray-700 dark:text-gray-300"></i>
+    </button>
+    <a routerLink="/" class="text-2xl font-bold text-primary-600 dark:text-primary-400">SAKAI</a>
+  </div>
+
+  <!-- Actions à droite -->
+  <div class="flex items-center gap-5">
+    <!-- Mode sombre -->
+    <button class="layout-topbar-action" (click)="toggleDarkMode()" pTooltip="Mode sombre">
+      <i [ngClass]="{ 'pi pi-moon': layoutService.isDarkTheme(), 'pi pi-sun': !layoutService.isDarkTheme() }" class="text-2xl"></i>
+    </button>
+
+    <!-- Palette -->
+    <div class="relative">
+      <button class="layout-topbar-action layout-topbar-action-highlight" pStyleClass="@next"
+        enterFromClass="hidden" enterActiveClass="animate-scalein"
+        leaveToClass="hidden" leaveActiveClass="animate-fadeout"
+        [hideOnOutsideClick]="true" pTooltip="Palette de thème">
+        <i class="pi pi-palette text-2xl"></i>
+      </button>
+      <app-configurator />
+    </div>
+
+    <!-- Avatar + prénom -->
+    <div class="flex items-center gap-3 px-2">
+      <div class="w-10 h-10 rounded-full bg-primary-500 text-white flex items-center justify-center text-lg font-bold">
+        {{ firstName.charAt(0).toUpperCase() }}
+      </div>
+      <span class="text-base font-medium text-gray-700 dark:text-gray-300">
+        {{ firstName }}
+      </span>
+    </div>
+
+    <!-- Icônes : calendrier, profil, déconnexion -->
+    <button class="layout-topbar-action" pTooltip="Calendrier" (click)="router.navigate(['/calendar'])">
+      <i class="pi pi-calendar text-2xl"></i>
+    </button>
+
+    <button class="layout-topbar-action" pTooltip="Profil" (click)="router.navigate(['/profile'])">
+      <i class="pi pi-user text-2xl"></i>
+    </button>
+
+    <button class="layout-topbar-action text-red-600 dark:text-red-400" pTooltip="Déconnexion" (click)="logout()">
+      <i class="pi pi-sign-out text-2xl"></i>
+    </button>
+  </div>
+</nav>

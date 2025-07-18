@@ -50,6 +50,8 @@ export class Register {
       email: this.email,
       password: this.password
     };
+    console.log('Payload:', body);
+
 
     this.http.post('http://localhost:8080/api/auth/register', body, { responseType: 'text' }).subscribe({
       next: (response: string) => {

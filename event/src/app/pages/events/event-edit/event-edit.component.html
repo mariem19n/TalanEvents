@@ -1,0 +1,95 @@
+<p-toast></p-toast>
+
+<div class="flex justify-center mt-6 px-4">
+  <p-card header="Modifier un événement" class="w-full max-w-3xl">
+    <form #editForm="ngForm" (ngSubmit)="onSubmit(editForm)" class="grid gap-4">
+
+      <!-- Titre -->
+      <div class="field">
+        <label class="block font-medium mb-1">Titre</label>
+        <input pInputText name="title" [(ngModel)]="event.title" required placeholder="Ex: Atelier IA" class="w-full" />
+      </div>
+
+      <!-- Date -->
+      <div class="field">
+        <label class="block font-medium mb-1">Date</label>
+        <p-calendar [(ngModel)]="event.eventDate" name="eventDate" showIcon required class="w-full" dateFormat="yy-mm-dd"></p-calendar>
+      </div>
+
+      <!-- Heures côte à côte -->
+      <div class="flex gap-4 relative z-10">
+        <!-- Heure de début -->
+        <div class="field w-1/2 dropdown-wrapper relative">
+          <label class="block font-medium mb-1">Heure de début</label>
+          <div class="relative">
+            <input
+              type="text"
+              [(ngModel)]="startTimeString"
+              name="startTime"
+              readonly
+              required
+              placeholder="Heure souhaitée"
+              class="w-full p-inputtext text-sm pr-10 cursor-pointer"
+              (click)="toggleDropdown('start')" />
+              <i class="pi pi-clock absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"></i>
+          </div>
+
+          <ul *ngIf="showStartDropdown"
+              class="dropdown-menu absolute bg-white shadow-md mt-1 w-full max-h-48 overflow-y-auto rounded z-50">
+            <li *ngFor="let time of timeOptionsAmPm"
+                (click)="selectTime('start', time)"
+                class="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm">
+              {{ time }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Heure de fin -->
+        <div class="field w-1/2 dropdown-wrapper relative">
+          <label class="block font-medium mb-1">Heure de fin</label>
+          <div class="relative">
+            <input
+              type="text"
+              [(ngModel)]="endTimeString"
+              name="endTime"
+              readonly
+              required
+              placeholder="Heure souhaitée"
+              class="w-full p-inputtext text-sm pr-10 cursor-pointer"
+              (click)="toggleDropdown('end')" />
+              <i class="pi pi-clock absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"></i>
+          </div>
+
+          <ul *ngIf="showEndDropdown"
+              class="dropdown-menu absolute bg-white shadow-md mt-1 w-full max-h-48 overflow-y-auto rounded z-50">
+            <li *ngFor="let time of timeOptionsAmPm"
+                (click)="selectTime('end', time)"
+                class="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm">
+              {{ time }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Message d’erreur -->
+      <div *ngIf="timeError" class="text-red-600 text-sm -mt-2 mb-2">
+        {{ timeError }}
+      </div>
+
+      <!-- Lieu -->
+      <div class="field">
+        <label class="block font-medium mb-1">Lieu</label>
+        <input pInputText name="location" [(ngModel)]="event.location" required placeholder="Salle X" class="w-full" />
+      </div>
+
+      <!-- Description -->
+      <div class="field">
+        <label class="block font-medium mb-1">Description</label>
+        <textarea name="description" [(ngModel)]="event.description" rows="7" class="w-full p-inputtext"></textarea>
+      </div>
+
+      <!-- Bouton -->
+      <button pButton type="submit" label="Sauvegarder" class="w-full"></button>
+    </form>
+  </p-card>
+</div>

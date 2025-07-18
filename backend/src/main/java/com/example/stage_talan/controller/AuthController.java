@@ -2,6 +2,7 @@ package com.example.stage_talan.controller;
 
 import com.example.stage_talan.dto.AuthRequest;
 import com.example.stage_talan.model.AppUser;
+import com.example.stage_talan.model.Role;
 import com.example.stage_talan.repository.AppUserRepository;
 import com.example.stage_talan.security.JwtUtil;
 import com.example.stage_talan.service.PasswordResetService;
@@ -18,8 +19,10 @@ import com.example.stage_talan.model.PasswordResetToken;
 import com.example.stage_talan.repository.PasswordResetTokenRepository;
 import com.example.stage_talan.service.EmailService;
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.transaction.annotation.Transactional;
+import com.example.stage_talan.dto.AuthResponse;
 
 
 @RestController
@@ -51,7 +54,7 @@ public class AuthController {
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole("USER");
+        user.setRoles(Set.of(Role.USER));
 
         AppUser savedUser = userRepository.save(user);
         return ResponseEntity.ok("Utilisateur enregistré avec succès : " + savedUser.getEmail());
@@ -72,10 +75,13 @@ public class AuthController {
         }
 
         // Génération du token JWT
-        String token = jwtUtil.generateToken(user.getEmail());
+        String token = jwtUtil.generateToken(user);
 
-        // Retour du token dans un objet JSON
-        return ResponseEntity.ok(Map.of("token", token));
+        AuthResponse response = new AuthResponse();
+        response.setAccessToken(token);
+        response.setRoles(user.getRoles());
+
+        return ResponseEntity.ok(response);
     }
 
 

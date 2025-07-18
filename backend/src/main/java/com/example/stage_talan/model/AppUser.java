@@ -1,7 +1,12 @@
 package com.example.stage_talan.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
         import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "app_user")
@@ -23,16 +28,22 @@ public class AppUser {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private String role;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    private Set<Role> roles = new HashSet<>();
 
     @PrePersist
     public void setDefaultRole() {
-        if (this.role == null) {
-            this.role = "USER";
+        if (this.roles == null || this.roles.isEmpty()) {
+            this.roles = Set.of(Role.USER);
         }
+    }
+
+    public boolean hasRole(Role role) {
+        return roles.contains(role);
     }
 }
