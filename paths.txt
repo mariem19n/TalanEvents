@@ -1,5 +1,0 @@
-C:\Users\guesm\frontend-demo
-
-stage-talan: spring
-
-event: angular
