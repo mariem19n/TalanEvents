@@ -1,12 +1,16 @@
 package com.example.stage_talan.controller;
 
+import com.example.stage_talan.dto.UserDto;
 import com.example.stage_talan.model.AppUser;
 import com.example.stage_talan.repository.AppUserRepository;
 import com.example.stage_talan.security.JwtUtil;
+import com.example.stage_talan.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
@@ -36,6 +40,15 @@ public class UserController {
                 .map(user -> ResponseEntity.ok(new UserIdDTO(user.getId())))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @Autowired
+    private UserService userService;
+
+    @GetMapping
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
+
 
     // DTO interne pour ne renvoyer que l’ID
     public static class UserIdDTO {

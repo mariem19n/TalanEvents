@@ -27,7 +27,7 @@ interface Event {
 export class EventListComponent implements OnInit {
   events = signal<Event[]>([]);
   filteredEvents = signal<Event[]>([]);
-  currentUserId: number = 0;  // number au lieu de string
+  currentUserId: number = 0;  
 
   constructor(private eventService: EventService, private authService: AuthService) {}
 

@@ -1,0 +1,98 @@
+<!-- 
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+
+<div class="card upload-container">
+
+    <p-fileUpload
+    #fileUploader
+    name="poster"
+    mode="advanced"
+    accept="image/*"
+    [auto]="false"
+    [customUpload]="true"
+    [multiple]="false"
+    maxFileSize="1000000"
+    [showCancelButton]="true"
+    [showUploadButton]="true"
+    chooseLabel="Choisir"
+    uploadLabel="Téléverser"
+    cancelLabel="Annuler"
+    (onClear)="resetFileSelection()"
+    (uploadHandler)="onUpload($event)"
+    (onSelect)="onSelect($event)"
+    >
+    <ng-template pTemplate="content">
+        <div *ngIf="currentFile">
+        <ul>
+            <li>{{ currentFile.name }} - {{ (currentFile.size / 1024).toFixed(2) }} KB</li>
+        </ul>
+        Affiché uniquement si un poster a été téléversé 
+        <button *ngIf="posterUploaded" 
+                pButton 
+                icon="pi pi-trash"
+                label="Supprimer le poster"
+                class="p-button-danger mt-2"
+                (click)="onClear()">
+        </button>
+
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="empty">
+        <div class="text-gray-600">Déposez une image ici pour la téléverser.</div>
+    </ng-template>
+    </p-fileUpload>
+
+</div>
+-->
+
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<div class="card upload-container">
+
+  <p-fileUpload
+    #fileUploader
+    name="poster"
+    mode="advanced"
+    accept="image/*"
+    [auto]="false"
+    [customUpload]="true"
+    [multiple]="false"
+    maxFileSize="1000000"
+    [showCancelButton]="true"
+    [showUploadButton]="true"
+    chooseLabel="Choisir"
+    uploadLabel="Téléverser"
+    cancelLabel="Annuler"
+    (uploadHandler)="onUpload($event)"
+    (onSelect)="onSelect($event)"
+    (onClear)="onClear()"
+  >
+    <ng-template pTemplate="content">
+      <div *ngIf="currentFile">
+        <ul>
+          <li>{{ currentFile.name }} - {{ (currentFile.size / 1024).toFixed(2) }} KB</li>
+        </ul>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="empty">
+      <div class="text-gray-600">Déposez une image ici pour la téléverser.</div>
+    </ng-template>
+  </p-fileUpload>
+
+  <div class="mt-2" *ngIf="posterUploaded">
+    <button
+      pButton
+      type="button"
+      label="Supprimer le poster"
+      icon="pi pi-trash"
+      severity="danger"
+      (click)="confirmDeletePoster()"
+    ></button>
+  </div>
+
+</div>

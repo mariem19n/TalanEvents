@@ -2,10 +2,7 @@ package com.example.stage_talan.controller;
 
 import com.example.stage_talan.dto.EventRequestDTO;
 import com.example.stage_talan.dto.EventResponseDTO;
-import com.example.stage_talan.model.AppUser;
-import com.example.stage_talan.model.Event;
-import com.example.stage_talan.model.EventStatus;
-import com.example.stage_talan.model.Role;
+import com.example.stage_talan.model.*;
 import com.example.stage_talan.repository.AppUserRepository;
 import com.example.stage_talan.repository.EventRepository;
 
@@ -19,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -162,6 +160,24 @@ public class EventController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/{eventId}/planning")
+    public ResponseEntity<Void> updatePlanning(
+            @PathVariable Long eventId,
+            @RequestBody List<PlanningStep> planningSteps) {
+
+        Optional<Event> optionalEvent = eventRepository.findById(eventId);
+        if (optionalEvent.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Event event = optionalEvent.get();
+        event.setPlanning(planningSteps);
+        eventRepository.save(event);
+
+        return ResponseEntity.ok().build();
+    }
+
+
     // conversion Event en EventResponseDTO
     private EventResponseDTO convertToDTO(Event event) {
         EventResponseDTO dto = new EventResponseDTO();
@@ -173,6 +189,8 @@ public class EventController {
         dto.setEndTime(event.getEndTime());
         dto.setLocation(event.getLocation());
         dto.setStatus(event.getStatus());
+        dto.setPosterUrl(event.getPosterUrl());
+        dto.setPlanning(event.getPlanning());
 
         AppUser creator = event.getCreatedBy();
         dto.setCreatorId(creator.getId());
@@ -182,10 +200,13 @@ public class EventController {
         dto.setCreatorLastName(creator.getLastName());
 
 
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String connectedEmail = auth.getName();
         dto.setColor(creator.getEmail().equals(connectedEmail) ? "blue" : "gray");
 
         return dto;
     }
+
+
 }

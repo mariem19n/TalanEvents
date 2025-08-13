@@ -1,0 +1,64 @@
+
+<div class="card">
+  <h3 class="mb-3">Aperçu du planning</h3>
+
+  <!-- Message si aucune étape valide -->
+  <p *ngIf="visibleSteps.length === 0" class="text-gray-500 italic">
+    Aucune étape valide à afficher dans la timeline.
+  </p>
+
+  <!-- Timeline si étapes valides -->
+  <p-timeline 
+    *ngIf="visibleSteps.length > 0"
+    [value]="visibleSteps"
+    align="alternate"
+  >
+    <!-- Contenu de chaque étape -->
+    <ng-template pTemplate="content" let-step>
+      <div>
+        <strong>{{ step.label }}</strong><br />
+        <small>{{ step.time }}</small>
+      </div>
+    </ng-template>
+
+    <!-- Marqueur visuel -->
+    <ng-template pTemplate="marker" let-step>
+      <span class="custom-marker">
+        <i class="pi" [ngClass]="step.icon || 'pi pi-circle'"></i>
+      </span>
+    </ng-template>
+  </p-timeline>
+
+  <!-- Pour déboguer (optionnel) -->
+  <!-- <pre>{{ visibleSteps | json }}</pre> -->
+</div>
+
+
+
+
+<!--
+Ancienne version
+
+<div class="card">
+  <h3 class="mb-3">Planning de l'événement</h3>
+
+  <p-timeline 
+    [value]="steps" 
+    align="alternate"
+    class="custom-timeline"
+  >
+    <ng-template let-step pTemplate="content">
+      <div class="timeline-content">
+        <strong>{{ step.label }}</strong><br />
+        <small class="text-gray-600">{{ step.time }}</small>
+      </div>
+    </ng-template>
+
+    <ng-template let-step pTemplate="marker">
+      <span class="custom-marker">
+        <i class="pi" [ngClass]="step.icon || 'pi pi-calendar'"></i>
+      </span>
+    </ng-template>
+  </p-timeline>
+</div>
+ -->

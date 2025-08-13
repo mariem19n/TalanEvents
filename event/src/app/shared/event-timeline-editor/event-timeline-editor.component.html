@@ -1,0 +1,139 @@
+<p-dialog
+  header="Choisir une icône"
+  [(visible)]="visibleIconDialog"
+  [modal]="true"
+  [style]="{ width: '450px' }"
+>
+  <div class="grid grid-cols-3 gap-3">
+    <div
+      *ngFor="let icon of extraIcons"
+      class="flex justify-center items-center p-3 border rounded cursor-pointer hover:bg-green-100 transition"
+      (click)="selectExtraIcon(icon.value)"
+      [pTooltip]="icon.label"
+      tooltipPosition="top"
+    >
+      <i [class]="icon.value + ' text-2xl text-green-600'"></i>
+    </div>
+  </div>
+</p-dialog>
+
+<div class="timeline-editor">
+  <h3 class="mb-3">Planning de l'événement</h3>
+
+  <div *ngFor="let step of steps; let i = index" class="step-form">
+    <div class="form-row">
+      <!-- Heure dropdown -->
+      <p-dropdown
+        [options]="hourOptions"
+        [(ngModel)]="step.time"
+        placeholder="Heure"
+        class="dropdown-small"
+      ></p-dropdown>
+
+      <!-- Libellé -->
+      <input
+        type="text"
+        placeholder="Libellé (ex: Accueil)"
+        [(ngModel)]="step.label"
+        pInputText
+        class="input-medium"
+      />
+
+      <!-- Choix icône -->
+      <p-dropdown
+        [options]="iconOptions"
+        [(ngModel)]="step.icon"
+        placeholder="Icône"
+        optionLabel="label"
+        optionValue="value"
+        styleClass="dropdown-small"
+        (onChange)="onIconChange(i, step.icon)"
+      ></p-dropdown>
+
+      <!-- Supprimer l’étape -->
+      <button
+        pButton
+        icon="pi pi-trash"
+        class="p-button-danger p-button-sm"
+        (click)="removeStep(i)"
+      ></button>
+    </div>
+  </div>
+
+  <div class="mt-3">
+    <button
+      pButton
+      label="Ajouter une étape"
+      icon="pi pi-plus"
+      (click)="addStep()"
+      class="mr-2"
+    ></button>
+    <button
+      pButton
+      label="Enregistrer le planning"
+      icon="pi pi-save"
+      class="p-button-success"
+      (click)="save()"
+    ></button>
+  </div>
+</div>
+
+
+<!--
+<div class="timeline-editor">
+  <h3 class="mb-3">Planning de l'événement</h3>
+
+  <div *ngFor="let step of steps; let i = index" class="step-form">
+    <div class="form-row">
+      <p-dropdown
+        [options]="hourOptions"
+        [(ngModel)]="step.time"
+        placeholder="Heure"
+        class="dropdown-small"
+      />
+
+      <input
+        type="text"
+        placeholder="Libellé (ex: Accueil)"
+        [(ngModel)]="step.label"
+        pInputText
+        class="input-medium"
+      />
+      <p-dropdown
+        [options]="iconOptions"
+        [(ngModel)]="step.icon"
+        placeholder="Icône"
+        optionLabel="label"
+        optionValue="value"
+        styleClass="dropdown-small"
+      ></p-dropdown>
+     
+      <div
+        *ngIf="step.icon === 'autre'"
+        class="grid grid-cols-4 gap-3 mt-2"
+      >
+        <div
+          *ngFor="let icon of extraIcons"
+          class="cursor-pointer flex items-center justify-center border rounded p-2 hover:bg-green-100 transition"
+          (click)="step.icon = icon; stepsChange.emit(steps)"
+        >
+          <i [class]="icon + ' text-xl text-green-600'"></i>
+        </div>
+      </div>
+
+
+      <button
+        pButton
+        icon="pi pi-trash"
+        class="p-button-danger p-button-sm"
+        (click)="removeStep(i)"
+      ></button>
+    </div>
+  </div>
+
+  <div class="mt-3">
+    <button pButton label="Ajouter une étape" icon="pi pi-plus" (click)="addStep()" class="mr-2"></button>
+    <button pButton label="Enregistrer le planning" icon="pi pi-save" class="p-button-success" (click)="save()"></button>
+  </div>
+</div>
+-->

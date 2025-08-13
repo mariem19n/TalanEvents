@@ -6,6 +6,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -35,6 +36,7 @@ public class EmailService {
     }
 
     // Méthode appelée automatiquement chaque heure pour nettoyer les tokens expirés
+    @Transactional
     @Scheduled(cron = "0 0 * * * *")
     public void cleanupExpiredTokens() {
         System.out.println(" Nettoyage des tokens expirés lancé à " + LocalDateTime.now());

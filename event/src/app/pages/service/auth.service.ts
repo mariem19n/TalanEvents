@@ -82,9 +82,31 @@ export class AuthService {
       );
   }
 
+  getUserInfo(): { email: string; firstName?: string; lastName?: string } {
+  const token = this.getToken();
+  if (!token) return { email: '' };
+
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return {
+      email: payload.sub || '',
+      firstName: payload.firstName || '',
+      lastName: payload.lastName || ''
+    };
+  } catch {
+    return { email: '' };
+  }
+}
+
+  getUserProfile(): Observable<any> {
+  return this.http.get('http://localhost:8080/api/user/profile');
+}
+
+
+
   logout(): void {
-  localStorage.removeItem('auth-token');
-  localStorage.removeItem('auth-user'); 
+    localStorage.removeItem('auth-token');
+    localStorage.removeItem('auth-user'); 
 }
 
 

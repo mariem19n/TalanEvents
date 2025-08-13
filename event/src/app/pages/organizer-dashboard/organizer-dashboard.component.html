@@ -1,5 +1,207 @@
-<div class="dashboard-container p-4">
-  <h2 class="mb-4">Mon Dashboard Organisateur</h2>
+ 
+<div class="w-full flex items-center justify-between px-6 py-4 shadow-md border-b border-gray-200 dark:border-gray-700"
+     [ngClass]="{ 'bg-white': !darkMode, 'bg-gray-800': darkMode }">
+
+ 
+    <!-- Avatar + nom -->
+  <div class="flex items-center space-x-4">
+    <!-- avatar cliquable -> ouvre le DIALOG -->
+    <button class="rounded-full" pTooltip="Mon profil" tooltipPosition="bottom"
+            (click)="showProfile = true">
+      <img [src]="user.avatarUrl" class="w-10 h-10 rounded-full shadow object-cover" />
+    </button>
+
+    <span class="text-2xl font-bold text-gray-800 dark:text-green-300">
+      Bonjour, {{ user.firstName }} {{ user.lastName }}
+    </span>
+  </div>
+
+
+    
+
+  
+  <div class="flex items-center space-x-4">
+    <button pButton icon="pi pi-inbox" class="p-button-rounded p-button-text text-gray-700 dark:text-gray-200"
+            pTooltip="Messages" tooltipPosition="bottom"></button>
+
+     <!-- fait scroller vers la section calendrier -->
+    <button pButton icon="pi pi-calendar" class="p-button-rounded p-button-text text-gray-700 dark:text-gray-200"
+            pTooltip="Calendrier" tooltipPosition="bottom"
+            (click)="scrollToCalendar()"></button>
+
+    
+    <button pButton icon="pi pi-bell" class="p-button-rounded p-button-text text-gray-700 dark:text-gray-200"
+            pTooltip="Notifications" tooltipPosition="bottom"></button>
+
+    <button pButton icon="pi pi-moon" class="p-button-rounded p-button-text text-gray-700 dark:text-gray-200"
+            pTooltip="Mode sombre" tooltipPosition="bottom"
+            (click)="toggleDarkMode()"></button>
+
+    <button pButton icon="pi pi-sign-out" class="p-button-rounded p-button-text text-red-500"
+            pTooltip="Se déconnecter" tooltipPosition="bottom"
+            (click)="logout()"></button>
+  </div>
+</div> 
+
+<div class="dashboard-container px-0 py-4">
+
+    <h2 class="mb-4">Mon Dashboard Organisateur</h2>
+
+  <!-- === STATS ORGANIZER (GLOBAL) === -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+
+  <!-- Carte : Événements créés -->
+  <p-card [styleClass]="'stat-card shadow-md rounded-2xl'">
+    <div class="flex items-start justify-between">
+      <div>
+        <div class="card-title">Événements créés</div>
+        <div class="mt-2 text-4xl font-extrabold text-slate-900">
+          {{ overview?.totalEvents || 0 }}
+        </div>
+
+        <div class="mt-3 text-xs">
+          <span class="text-emerald-600 font-medium">
+            {{ overview?.eventsByStatus?.['VALIDATED'] || 0 }} validé(s)
+          </span>
+          <span class="text-slate-400"> •
+            {{ overview?.eventsByStatus?.['PENDING'] || 0 }} en attente
+          </span>
+        </div>
+      </div>
+
+      <span class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100">
+        <i class="pi pi-calendar text-blue-600 text-xl"></i>
+      </span>
+    </div>
+  </p-card>
+
+  <!-- Carte : Invitations envoyées -->
+  <p-card [styleClass]="'stat-card shadow-md rounded-2xl'">
+    <div class="flex items-start justify-between">
+      <div>
+        <div class="card-title">Invitations envoyées</div>
+        <div class="mt-2 text-4xl font-extrabold text-slate-900">
+          {{ overview?.totalInvitations || 0 }}
+        </div>
+
+        <div class="mt-3 text-xs">
+          <span class="text-emerald-600 font-medium">
+            {{ overview?.acceptedInvitations || 0 }} acceptée(s)
+          </span>
+          <span class="text-slate-400">
+            • {{ overview?.pendingInvitations || 0 }} en attente
+            • {{ overview?.declinedInvitations || 0 }} déclinée(s)
+          </span>
+        </div>
+      </div>
+
+      <span class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100">
+        <i class="pi pi-envelope text-indigo-600 text-xl"></i>
+      </span>
+    </div>
+  </p-card>
+
+  <!-- Carte : Taux de participation -->
+  <p-card [styleClass]="'stat-card shadow-md rounded-2xl'">
+    <div class="flex items-start justify-between">
+      <div>
+        <div class="card-title">Taux de participation</div>
+        <div class="mt-2 text-4xl font-extrabold text-slate-900">
+          {{ (overview?.participationRate || 0) | number:'1.0-1' }}%
+        </div>
+
+        <div class="mt-3 text-xs">
+          <span class="text-emerald-600 font-medium">
+            {{ overview?.acceptedInvitations || 0 }} acceptée(s)
+          </span>
+          <span class="text-slate-400"> • sur {{ overview?.totalInvitations || 0 }} invitation(s)</span>
+        </div>
+      </div>
+
+      <span class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100">
+        <i class="pi pi-chart-line text-amber-600 text-xl"></i>
+      </span>
+    </div>
+  </p-card>
+
+  <!-- Carte : Participants moyens / évènement -->
+  <p-card [styleClass]="'stat-card shadow-md rounded-2xl'">
+    <div class="flex items-start justify-between">
+      <div>
+        <div class="card-title">Participants / événement </div>
+        <div class="mt-2 text-4xl font-extrabold text-slate-900">
+          {{ (overview?.avgParticipantsPerEvent || 0) | number:'1.0-1' }}
+        </div>
+
+        <div class="mt-3 text-xs">
+          <span class="text-slate-500">Invitations </span>
+          <span class="text-emerald-600 font-medium">acceptées</span>
+        </div>
+      </div>
+
+      <span class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-100">
+        <i class="pi pi-users text-cyan-600 text-xl"></i>
+      </span>
+    </div>
+  </p-card>
+
+</div>
+
+
+<div class="grid gap-6 mb-6" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+  <p-card header="Statuts des événements">
+    <div style="height:290px">
+      <p-chart type="doughnut" [data]="statusChartData" [options]="statusChartOptions"></p-chart>
+    </div>
+  </p-card>
+
+  <p-card header="Répartition des invitations">
+    <br>
+    <div style="height:275px">
+    <p-chart
+      type="bar"
+      [data]="invChartData"
+      [options]="invChartOptions"
+      style="display:block; width:100%; height:100%">
+    </p-chart>
+    </div>
+  </p-card>
+</div>
+
+<!-- === TOP 3 ÉVÉNEMENTS (PARTICIPANTS) === -->
+<p-card [styleClass]="'shadow-md rounded-2xl border-0 mb-6'">
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-3 pt-4 px-4">
+      
+      <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-yellow-100">
+        <i class="pi pi-trophy text-yellow-600 text-lg"></i>
+      </span>
+      <div class="text-xl font-semibold">Top 3 des événements (participants)</div>
+    </div>
+  </ng-template>
+
+  <div *ngIf="overview?.topEvents?.length; else emptyTop" class="divide-y divide-slate-100">
+    <div *ngFor="let ev of overview?.topEvents; let i = index" class="flex items-center justify-between py-3">
+      <div class="flex items-center gap-3">
+        <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-slate-700 text-sm font-semibold">
+          {{ i + 1 }}
+        </span>
+        <div class="text-slate-800 font-medium">{{ ev.title }}</div>
+      </div>
+
+      <span class="inline-flex items-center gap-2">
+        <span class="text-slate-500 text-sm">Participants</span>
+        <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold">
+          {{ ev.participants }}
+        </span>
+      </span>
+    </div>
+  </div>
+
+  <ng-template #emptyTop>
+    <div class="py-6 text-slate-500 text-sm">Aucune donnée disponible pour l’instant.</div>
+  </ng-template>
+</p-card>
 
   <div class="flex justify-center mb-6">
     <button 
@@ -23,7 +225,11 @@
   
 
   <!-- Tableau -->
-  <p-table [value]="filteredEvents" [paginator]="true" [rows]="10" [responsiveLayout]="'scroll'">
+  <p-table [value]="filteredEvents" [paginator]="true" [rows]="rows" [rowsPerPageOptions]="[5,10,20,50]"   
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Affichage {first}–{last} sur {totalRecords} événements"
+    [showFirstLastIcon]="true"
+    [first]="tableFirst"  [responsiveLayout]="'scroll'">
     <ng-template pTemplate="header">
       <tr>
         <th>Titre</th>
@@ -79,10 +285,11 @@
   <!-- Code couleur -->
   <br>
   <h3 class="mt-2 mb-2">Calendrier des événements</h3>
-  <div class="mt-6 mb-2 flex items-center gap-4">
+  <div #calendarSection class="mt-6 mb-2 flex items-center gap-4">
     <span class="flex items-center gap-2"><span class="w-4 h-4 rounded bg-blue-500 inline-block"></span> Mes événements</span>
     <span class="flex items-center gap-2"><span class="w-4 h-4 rounded bg-gray-400 inline-block"></span> Événements des autres</span>
   </div>
+
 
   <!-- Calendrier -->
   <full-calendar [options]="calendarOptions" style="background-color: white; padding: 1rem; border-radius: 8px;"></full-calendar>
@@ -103,7 +310,7 @@
           pButton 
           icon="pi pi-pencil" 
           label="Modifier" 
-          (click)="editFromDialog()">
+           (click)="showDialog=false; openEditDialog(selectedEvent.id)">
         </button>
 
         <button 
@@ -117,5 +324,77 @@
     </div>
   </p-dialog>
 
+  <p-dialog
+  [(visible)]="showCreateDialog"
+  [modal]="true"
+  [dismissableMask]="true"
+  [closable]="false"
+  appendTo="body"
+  [style]="{ width: '720px', maxWidth: '95vw' }"
+  [contentStyle]="{ padding: '0.75rem 1rem' }">
+
+  <ng-template pTemplate="header">
+    <div class="flex items-center justify-between w-full">
+      <span class="text-lg font-semibold">Créer un événement</span>
+       <button pButton type="button" icon="pi pi-times" class="p-button-rounded p-button-text"
+              (click)="showCreateDialog = false"></button>
+    </div>
+  </ng-template>
+
+  <app-event-create
+    [isModal]="true"
+    [initialDate]="createDialogDate"
+    (saved)="onEventCreated()"
+    (closed)="showCreateDialog = false">
+  </app-event-create>
+</p-dialog>
+
+
+  <p-dialog
+  [(visible)]="showEditDialog"
+  [modal]="true"
+  [dismissableMask]="true"
+  [closable]="false"
+  appendTo="body"
+  [style]="{ width: '720px', maxWidth: '95vw' }"
+  [contentStyle]="{ padding: '0.75rem 1rem' }">
+
+  <ng-template pTemplate="header">
+    <div class="flex items-center justify-between w-full">
+      <span class="text-lg font-semibold">Modifier l'événement</span>
+      <button pButton type="button" icon="pi pi-times" class="p-button-rounded p-button-text"
+              (click)="showEditDialog = false"></button>
+    </div>
+  </ng-template>
+
+  <app-event-edit
+    [isModal]="true"
+    [eventIdInput]="editDialogEventId"
+    (saved)="onEventUpdated()"
+    (closed)="showEditDialog = false">
+  </app-event-edit>
+</p-dialog>
+
+
+    <p-dialog header="👤 Mon profil"
+            [(visible)]="showProfile"
+            [modal]="true"
+            [style]="{ width: '400px' }"
+            [baseZIndex]="10000"
+            [closable]="true"
+            [styleClass]="'rounded-xl shadow-xl text-base'">
+    <app-user-profile-card
+      [fullName]="user.fullName"
+      [email]="user.email"
+      [avatarUrl]="user.avatarUrl"
+      [badges]="user.badges">
+    </app-user-profile-card>
+  </p-dialog>
+
+
+
+
   <p-confirmDialog></p-confirmDialog>
+  <p-toast></p-toast>
+
 </div>

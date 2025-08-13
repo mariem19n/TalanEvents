@@ -1,0 +1,66 @@
+.timeline-editor {
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.input-small {
+  width: 100px;
+}
+
+.input-medium {
+  flex: 1;
+}
+
+/*.dropdown-small {
+  width: 150px;
+}*/
+
+.dropdown-small {
+  width: 120px;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+
+
+/*  ANCIEN STYLE
+.timeline-editor {
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.step-form {
+  margin-bottom: 1rem;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.input-small {
+  width: 100px;
+}
+
+.input-medium {
+  flex: 1;
+}
+
+.dropdown-small {
+  width: 150px;
+}
+*/

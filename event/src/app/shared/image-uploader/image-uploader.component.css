@@ -1,0 +1,9 @@
+.upload-container {
+  max-width: 600px;
+  padding: 1rem;
+}
+
+.button-row {
+  display: flex;
+  gap: 1rem;
+}

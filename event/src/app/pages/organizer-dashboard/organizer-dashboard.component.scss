@@ -6,3 +6,25 @@
 p-table {
   width: 100%;
 }
+
+::ng-deep .p-confirm-dialog .p-dialog-footer {
+  display: flex !important;
+  flex-direction: row-reverse !important;
+}
+
+:host ::ng-deep .card-title {
+  font-size: 1.125rem; /* ~ text-lg */
+  font-weight: 400;
+  line-height: 1.2;
+  color: grey; /* slate-900 */
+}
+
+:host ::ng-deep .stat-card .p-card-body { min-height: 11rem; } /* ~ h-44 */
+:host ::ng-deep .stat-card { width: w-80; } /* ~ w-96 */
+
+:host ::ng-deep .chart-card .p-chart,
+:host ::ng-deep .chart-card canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+

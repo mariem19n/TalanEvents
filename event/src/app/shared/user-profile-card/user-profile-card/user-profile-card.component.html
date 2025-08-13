@@ -1,0 +1,9 @@
+<div class="text-center p-4">
+  <img [src]="avatarUrl" class="w-20 h-20 rounded-full shadow mx-auto mb-3" />
+  <h2 class="text-xl font-semibold">{{ fullName }}</h2>
+  <p class="text-sm text-gray-500 dark:text-gray-400">{{ email }}</p>
+
+  <div class="flex flex-wrap gap-2 justify-center mt-3">
+    <p-tag *ngFor="let badge of badges" severity="success" [value]="badge"></p-tag>
+  </div>
+</div>

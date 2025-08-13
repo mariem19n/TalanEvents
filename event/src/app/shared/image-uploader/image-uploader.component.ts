@@ -1,72 +1,120 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FileUploadModule } from 'primeng/fileupload';
-import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { FileUploadModule, FileUpload } from 'primeng/fileupload';
 import { ButtonModule } from 'primeng/button';
+import { ToastModule } from 'primeng/toast';
+import { MessageService, ConfirmationService } from 'primeng/api';
+import { HttpClient } from '@angular/common/http';
+import { ViewChild } from '@angular/core';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+
+
 
 @Component({
   selector: 'app-image-uploader',
   standalone: true,
-  imports: [CommonModule, FileUploadModule, ToastModule, ButtonModule],
-  providers: [MessageService],
-  template: `
-    <p-toast></p-toast>
-    <div class="card">
-      <div class="font-semibold text-xl mb-4">Téléversement du poster</div>
-      <p-fileUpload
-        name="poster"
-        mode="advanced"
-        accept="image/*"
-        [auto]="true"
-        maxFileSize="1000000"
-        [showUploadButton]="false"
-        [showCancelButton]="false"
-        (onSelect)="onSelect($event)"
-        (onUpload)="onUpload($event)"
-        [customUpload]="true"
-        (uploadHandler)="customUploader($event)"
-      >
-        <ng-template #empty>
-          <div>Faites glisser une image ici ou cliquez sur "Choisir".</div>
-        </ng-template>
-      </p-fileUpload>
-    </div>
-  `
+  imports: [CommonModule, FileUploadModule, ButtonModule, ToastModule, ConfirmDialogModule],
+  providers: [MessageService, ConfirmationService],
+  templateUrl: './image-uploader.component.html',
+  styleUrls: ['./image-uploader.component.css']
 })
 export class ImageUploaderComponent {
-  @Output() onImageUploaded = new EventEmitter<File>();
+  @Input() eventId!: number;
+  @Output() onImageUploaded = new EventEmitter<string>();
+  @Output() onImageCleared = new EventEmitter<void>();
 
-  constructor(private messageService: MessageService) {}
+  //@ViewChild('fileUploader') fileUploader!: FileUpload;
+
+
+  currentFile: File | null = null;
+  uploadedFiles: File[] = [];
+  posterUploaded = false;
+
+
+  constructor(
+    private messageService: MessageService,
+    private http: HttpClient,
+    private confirmationService: ConfirmationService
+
+  ) {}
 
   onSelect(event: any) {
-    if (event.files && event.files.length > 0) {
-      this.messageService.add({
-        severity: 'info',
-        summary: 'Image sélectionnée',
-        detail: `${event.files[0].name}`
-      });
+    if (event.files.length > 1) {
+      const last = event.files[event.files.length - 1];
+      event.options.clear();
+      event.options.addFiles([last]);
+      this.currentFile = last;
+    } else {
+      this.currentFile = event.files[0];
     }
   }
 
   onUpload(event: any) {
-    // (Non utilisé si on utilise customUpload)
+  if (this.currentFile && this.eventId) {
+    const formData = new FormData();
+    formData.append('poster', this.currentFile);
+
+    this.http.post<{ url: string }>(
+      `http://localhost:8080/api/events/${this.eventId}/poster`,
+      formData
+    ).subscribe({
+      next: (res) => {
+        this.uploadedFiles.push(this.currentFile!);
+        this.onImageUploaded.emit(res.url); // émettre l'URL
+        this.posterUploaded = true;
+        console.log("Poster uploadé avec succès");
+        console.log("posterUploaded = ", this.posterUploaded);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Succès',
+          detail: `"${this.currentFile!.name}" a été téléversé avec succès.`,
+        });
+        event.options.clear();
+        this.currentFile = null;
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erreur',
+          detail: 'Échec du téléversement.',
+        });
+      }
+    });
+  }
+}
+
+  onClear() {
+    this.currentFile = null;
+    this.uploadedFiles = [];
   }
 
-  customUploader(event: any) {
-    const file: File = event.files[0];
 
-    if (file) {
-      //  Envoi de l’image au parent (ex: EventViewComponent)
-      this.onImageUploaded.emit(file);
-
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Succès',
-        detail: `"${file.name}" envoyé avec succès.`
-      });
-
-      event.options.clear(); // vide le champ après upload
-    }
+  confirmDeletePoster() {
+    this.confirmationService.confirm({
+      message: 'Confirmez-vous la suppression du poster ?',
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.http.delete(`http://localhost:8080/api/events/${this.eventId}/poster`).subscribe({
+          next: () => {
+            this.posterUploaded = false;
+            this.onImageCleared.emit();
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Suppression',
+              detail: 'Le poster a été supprimé avec succès.',
+            });
+          },
+          error: () => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Erreur',
+              detail: 'Échec de la suppression du poster.',
+            });
+          }
+        });
+      }
+    });
   }
+
 }

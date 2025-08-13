@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges  } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NgForm } from '@angular/forms';
 import { EventService } from '../../service/event.service';
@@ -13,6 +13,8 @@ import { CalendarModule } from 'primeng/calendar';
 import { ButtonModule } from 'primeng/button';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
+
+
 
 @Component({
   selector: 'app-event-edit',
@@ -31,6 +33,11 @@ import { ToastModule } from 'primeng/toast';
   templateUrl: './event-edit.component.html'
 })
 export class EventEditComponent implements OnInit {
+  @Input() isModal = false;
+  @Input() eventIdInput: string | null = null;
+  @Output() saved = new EventEmitter<void>();
+  @Output() closed = new EventEmitter<void>();
+
   eventId: string = '';
   event = {
     title: '',
@@ -57,8 +64,23 @@ export class EventEditComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // 1) Si utilisé en modal avec un id transmis
+    if (this.eventIdInput) {
+      this.eventId = this.eventIdInput;
+      this.loadEvent();
+      return;
+    }
+
+    // 2) Sinon: fonctionnement via la route (page /event-edit/:id)
     this.eventId = this.route.snapshot.paramMap.get('id') || '';
     if (this.eventId) {
+      this.loadEvent();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['eventIdInput']?.currentValue && this.isModal) {
+      this.eventId = changes['eventIdInput'].currentValue;
       this.loadEvent();
     }
   }
@@ -208,13 +230,15 @@ export class EventEditComponent implements OnInit {
       next: (userId) => {
         this.eventService.updateEvent(this.eventId, payload, +userId).subscribe({
           next: () => {
-            this.messageService.add({
-              severity: 'success',
-              summary: 'Succès',
-              detail: "Événement mis à jour avec succès.",
-              life: 5000
-            });
-            setTimeout(() => this.router.navigate(['/pages/organizer-dashboard']), 1500);
+            if (this.isModal) {
+              // Laisse le parent afficher le toast de succès
+              this.saved.emit();   // parent: refresh + toast
+              this.closed.emit();  // parent: fermeture du dialog
+            } else {
+              //  Mode page 
+              this.messageService.add({ severity: 'success', summary: 'Succès', detail: "Événement mis à jour avec succès.", life: 3000 });
+              setTimeout(() => this.router.navigate(['/pages/organizer-dashboard']), 1200);
+            }
           },
           error: () => {
             this.messageService.add({

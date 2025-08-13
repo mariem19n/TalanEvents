@@ -2,6 +2,8 @@ package com.example.stage_talan.controller;
 
 import com.example.stage_talan.dto.InvitationRequest;
 import com.example.stage_talan.dto.InvitationResponse;
+import com.example.stage_talan.dto.SingleInvitationRequest;
+import com.example.stage_talan.model.AppUser;
 import com.example.stage_talan.model.InvitationStatus;
 import com.example.stage_talan.service.InvitationService;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +21,21 @@ public class InvitationController {
 
     private final InvitationService invitationService;
 
-    @PostMapping("/send")
-    public ResponseEntity<InvitationResponse> sendInvitation(@RequestBody InvitationRequest request, Principal principal) {
-        return ResponseEntity.ok(invitationService.sendAndNotify(request, principal));
+   @PostMapping("/send")
+   public ResponseEntity<List<InvitationResponse>> sendInvitations(
+           @RequestBody InvitationRequest request, Principal principal) {
+       List<InvitationResponse> responses = invitationService.sendMultiple(request, principal);
+       return ResponseEntity.ok(responses);
+   }
+
+    @PostMapping("/send-one")
+    public ResponseEntity<InvitationResponse> sendSingleInvitation(
+            @RequestBody SingleInvitationRequest request, Principal principal) {
+        InvitationResponse response = invitationService.sendAndNotify(request, principal);
+        return ResponseEntity.ok(response);
     }
+
+
 
     @GetMapping("/me")
     public ResponseEntity<List<InvitationResponse>> getMyInvitations(Principal principal) {
@@ -46,5 +59,11 @@ public class InvitationController {
         List<InvitationResponse> responseList = invitationService.getInvitationsForEvent(eventId, principal);
         return ResponseEntity.ok(responseList);
     }
+
+    @GetMapping("/eligible-users/{eventId}")
+    public ResponseEntity<List<AppUser>> getEligibleUsers(@PathVariable Long eventId) {
+        return ResponseEntity.ok(invitationService.getEligibleUsersForInvitation(eventId));
+    }
+
 
 }

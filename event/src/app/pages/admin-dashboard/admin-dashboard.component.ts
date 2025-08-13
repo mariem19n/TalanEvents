@@ -182,7 +182,8 @@ export class AdminDashboardComponent implements OnInit {
     }
   };
 
-  approve(event: any) {
+  /*
+approve(event: any) {
     this.confirmationService.confirm({
       message: `Confirmez-vous l'approbation de "${event.title}" ?`,
       header: 'Confirmation',
@@ -212,7 +213,80 @@ export class AdminDashboardComponent implements OnInit {
         });
       }
     });
+  } */
+
+  approve(event: any) {
+    this.confirmationService.confirm({
+      message: `Confirmez-vous l'approbation de "${event.title}" ?`,
+      header: 'Confirmation',
+      icon: 'pi pi-check',
+
+      // Inversion pour "Oui" vert à gauche
+      acceptLabel: 'Non',
+      rejectLabel: 'Oui',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-success',
+
+      // Empêcher fermeture implicite
+      closable: false,
+      dismissableMask: false,
+      defaultFocus: 'reject',
+
+      // Action sur Oui
+      reject: () => {
+        this.eventService.validateEvent(event.id).subscribe(() => {
+          event.status = 'VALIDATED';
+          this.calendarOptions.events = this.calendarEvents;
+          this.generateChart();
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Succès',
+            detail: 'Événement approuvé'
+          });
+        });
+      },
+
+      // Ne rien faire sur Non
+      accept: () => {}
+    });
   }
+
+  reject(event: any) {
+    this.confirmationService.confirm({
+      message: `Confirmez-vous le rejet de "${event.title}" ?`,
+      header: 'Confirmation',
+      icon: 'pi pi-times',
+
+      // Inversion pour "Oui" vert à gauche
+      acceptLabel: 'Non',
+      rejectLabel: 'Oui',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-success',
+
+      closable: false,
+      dismissableMask: false,
+      defaultFocus: 'reject',
+
+      // Action sur Oui
+      reject: () => {
+        this.eventService.rejectEvent(event.id).subscribe(() => {
+          event.status = 'REJECTED';
+          this.calendarOptions.events = this.calendarEvents;
+          this.generateChart();
+          this.messageService.add({
+            severity: 'warn',
+            summary: 'Succès',
+            detail: 'Événement rejeté'
+          });
+        });
+      },
+
+      // Ne rien faire sur Non
+      accept: () => {}
+    });
+  }
+
+
 
   getSeverity(status: string): string {
     switch (status) {

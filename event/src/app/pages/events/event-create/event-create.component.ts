@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener ,Input, Output, EventEmitter, SimpleChanges} from '@angular/core';
 import { Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
 import { EventService } from '../../service/event.service';
@@ -13,6 +13,7 @@ import { ButtonModule } from 'primeng/button';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { ActivatedRoute } from '@angular/router';
+
 
 @Component({
   selector: 'app-event-create',
@@ -31,6 +32,11 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './event-create.component.html'
 })
 export class EventCreateComponent {
+  @Input() isModal = false;
+  @Input() initialDate: Date | null = null;
+  @Output() saved = new EventEmitter<void>();
+  @Output() closed = new EventEmitter<void>();
+
   event = {
     title: '',
     eventDate: null as Date | null,
@@ -138,7 +144,49 @@ export class EventCreateComponent {
     return true;
   }
 
+  private resetForm() {
+    this.event = { title: '', eventDate: null, location: '', description: '' };
+    this.startTimeString = '';
+    this.endTimeString = '';
+    this.timeError = '';
+  }
+
   createEvent(form: NgForm) {
+
+    // Liste des champs requis manquants (pour le message warn)
+  const missing: string[] = [];
+  if (!this.event.title?.trim())        missing.push('Titre');
+  if (!this.event.eventDate)            missing.push('Date');
+  if (!this.startTimeString?.trim())    missing.push('Heure de début');
+  if (!this.endTimeString?.trim())      missing.push('Heure de fin');
+  if (!this.event.location?.trim())     missing.push('Lieu');
+  if (!this.event.description?.trim())  missing.push('Description');
+
+  if (missing.length > 0) {
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'Champs manquants',
+      detail: 'Veuillez remplir : ' + missing.join(', '),
+      life: 5000
+    });
+    return;
+  }
+
+  // Vérification cohérence des heures
+  if (!this.validateTime()) {
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'Heures invalides',
+      detail: this.timeError || "L'heure de fin doit être après l'heure de début.",
+      life: 5000
+    });
+    return;
+  }
+
+
+
+
+
     if (
       form.invalid ||
       !this.event.eventDate ||
@@ -159,15 +207,24 @@ export class EventCreateComponent {
     console.log('Payload envoyé:', payload);
 
     this.eventService.createEvent(payload).subscribe({
-      next: () => {
+    next: () => {
+      if (this.isModal) {
+        // ➜ Laisse le parent afficher le toast
+        this.saved.emit();       // parent: refresh + toast
+        this.closed.emit();      // parent: ferme le dialog
+        this.resetForm();
+      } else {
+        // ➜ Mode page: on peut afficher ici
         this.messageService.add({
           severity: 'success',
           summary: 'Succès',
           detail: "Événement créé avec succès.",
-          life: 5000
+          life: 3000
         });
-        setTimeout(() => this.router.navigate(['/pages/event-list']), 2000);
-      },
+        // navigation éventuelle...
+        // setTimeout(() => this.router.navigate(['/pages/event-list']), 800);
+      }
+    },
       error: (error) => {
         console.error('Erreur lors de la création de l’événement:', error);
         const detailMessage = error?.error?.message || "Échec de la création de l’événement.";
@@ -182,19 +239,34 @@ export class EventCreateComponent {
   }
 
   ngOnInit() {
-  this.route.queryParams.subscribe(params => {
-    if (params['date']) {
-      const selected = new Date(params['date']);
-      selected.setHours(0, 0, 0, 0);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      if (selected >= today) {
-        this.event.eventDate = selected;
-      }
+    // si utilisé dans un dialog
+    if (this.initialDate) {
+      const d = new Date(this.initialDate);
+      d.setHours(0,0,0,0);
+      this.event.eventDate = d;
+      return;
     }
-  });
-}
+
+    // sinon, garder le fonctionnement par URL (route)
+    this.route.queryParams.subscribe(params => {
+      if (params['date']) {
+        const selected = new Date(params['date']);
+        selected.setHours(0, 0, 0, 0);
+        const today = new Date(); today.setHours(0,0,0,0);
+        if (selected >= today) this.event.eventDate = selected;
+      }
+    });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['initialDate']?.currentValue) {
+      const d = new Date(changes['initialDate'].currentValue);
+      d.setHours(0,0,0,0);
+      this.event.eventDate = d;
+    }
+  }
+
+
 
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent) {
@@ -204,4 +276,6 @@ export class EventCreateComponent {
       this.showEndDropdown = false;
     }
   }
+
+  
 }

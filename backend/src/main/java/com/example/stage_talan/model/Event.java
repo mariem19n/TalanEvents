@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "events")
@@ -19,6 +21,7 @@ public class Event {
 
     private String title;
 
+    @Column(length = 1000)
     private String description;
 
     private LocalDate eventDate;
@@ -35,4 +38,12 @@ public class Event {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
     private AppUser createdBy;
+
+    @Column(name = "poster_url")
+    private String posterUrl;
+
+    @ElementCollection
+    private List<PlanningStep> planning = new ArrayList<>();
+
+
 }

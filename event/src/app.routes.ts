@@ -14,7 +14,7 @@ import { UnauthorizedComponent } from './app/pages/unauthorized/unauthorized.com
 export const appRoutes: Routes = [
     {
         path: '',
-        component: AppLayout,
+      //  component: AppLayout,
         children: [
             { path: '', component: Dashboard },
             { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },

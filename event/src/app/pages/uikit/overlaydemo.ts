@@ -126,8 +126,8 @@ import { Product, ProductService } from '../service/product.service';
                         <span>Are you sure you want to proceed?</span>
                     </div>
                     <ng-template #footer>
-                        <p-button label="No" icon="pi pi-times" (click)="closeConfirmation()" text severity="secondary" />
                         <p-button label="Yes" icon="pi pi-check" (click)="closeConfirmation()" severity="danger" outlined autofocus />
+                        <p-button label="No" icon="pi pi-times" (click)="closeConfirmation()" text severity="secondary" />
                     </ng-template>
                 </p-dialog>
             </div>
